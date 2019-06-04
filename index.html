@@ -1,0 +1,421 @@
+<!doctype html>
+<html>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+<link rel="stylesheet" href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/reveal.css>
+<link rel="stylesheet" href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/theme/night.min.css>
+<link rel="stylesheet" href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/lib/css/zenburn.css>
+<style>
+li {list-style:none;}
+</style>
+</head>
+<body>
+<div class=reveal>
+<div class=slides>
+
+<section>
+  <h1>Seattle Serverless</h1>
+  <h2>June 2019 🚀</h2>
+</section>
+<section>
+  <h2>Brian LeRoux<h2>
+      <small>CTO, co-founder <a href=https://begin.com>begin.com</a> <br>co-author of <a href=https://arc.codes>arc.codes</a></small>
+      <small class=fragment>server-less pundit <a href=https://twitter.com/brianleroux>@brianleroux</a></small>
+</section>
+<section>
+  <h2>Context Required</h2>
+  <small>A brief history of my relationship to serverless things.</small>
+</section>
+<section>
+  <pre>2014: chilly PnW November morning AWS Lambda was released</pre>
+  <pre class=fragment>me: this is interesting *</pre>
+  <pre class=fragment>
+
+
+
+
+
+* said warming my hands over a dumpster fire of HTTP servers
+</pre>
+</section>
+<section>
+  <pre class=fragment>Aug 2015: api gateway release </pre>
+  <pre class=fragment>me: ... it is time then</pre>
+</section>
+<section>
+  <pre>We started work on what would become Architect that November and</pre>
+  <pre>Lambda was roughly one year old …API Gateway barely a few months old<pre>
+</section>
+<section>
+  We were VERY aware this was early and going to be painful. <b>It was.</b>
+</section>
+<section>
+  <h3>Only paying for what you use 💸</h3> (💯% utilization)
+</section>
+<section>
+<h3>Better security model 🔐</h3>
+No ports to scan!
+</section>
+
+<section>
+  <h3>Focusing on business value 💰</h3> instead of managing infra
+</section>
+
+<section>
+<h3>3 🔑 reasons to serverless</h3>
+<ul style=text-align:left>
+<li class=fragment>💰 Fixed costs
+<li class=fragment>🔒 Better security
+<li class=fragment>🎢 Faster iterations
+</ul>
+</section>
+
+<section>
+  <h3>Mini-talk: 3 things that totally sucked about serverless late 2015</h3>
+  <ol>
+    <li>Coldstart!
+    <li>DynamoDB or gtfo
+    <li>Cloudformation support
+  </ol>
+</section>
+<section>
+  <h3>Coldstart</h3>
+<pre class=fragment>We observed the problem</pre>
+<pre class=fragment>We observed cold start correlated to the function payload size</pre>
+  <pre class=fragment>We determined that sub 5mb functions remained consistently subsecond</pre>
+  <pre class=fragment>We started authoring sub 5mb functions</pre>
+</section>
+<section>
+  <h3>3 things that</h3>
+  <h1>DO NOT</h1>
+  <h3>solve coldstart</h3>
+</section>
+<section>
+  <h3>pings</h3>
+  <h1 class=fragment>DOES NOT</h1>
+  <h3 class=fragment>solve coldstart</h3>
+</section>
+<section>
+  <h3>lambda warmers</h3>
+  <h1 class=fragment>DOES NOT</h1>
+  <h3 class=fragment>solve coldstart</h3>
+</section>
+<section>
+  <h3>putting web servers into functions</h3>
+  <h1 class=fragment>DOES NOT</h1>
+  <h3 class=fragment>solve coldstart</h3>
+</section>
+<section>
+  <h3>Sub 5mb Lambda functions</h3>
+  <h1 class=fragment>MOSTLY</h1>
+  <h3 class=fragment>solves coldstart</h3>
+</section>
+<section>
+  <small>Consider using a framework, like <a href=https://arc.codes>arc.codes</a>, that encourages small functions.</small>
+</section>
+<section>
+  <h3>DynamoDB or GTFO</h3>
+</section>
+<section>
+  We tried using traditional databases, elastic search and elastic cache (redis)
+</section>
+<section>
+  <h3>It was swimming upstream</h3>
+  <small class=fragment>But it is better now</small>
+</section>
+<section>
+  DynamoDB consistently great product that just keeps getting better
+</section>
+<section>
+  Maybe you can avoid DynamoDB by using… S3?!
+</section>
+<section>
+  <h3>Cloudformation</h3>
+  <div style=text-align:left>
+  <small class=fragment>1. Did not support the services we needed it to</small><br>
+  <small class=fragment>2. Severe limits (200 ish resources)</small><br>
+  <small class=fragment>3. Really slow iteration cycles (for us and them!)</small><br>
+  <small class=fragment>4. Verbose and difficult to debug configuration</small><br>
+  </div>
+</section>
+<section>
+  <small>Begrudgingly, and like so many before us,  we started by writing our own provisioning scripts.</small>
+</section>
+<section>
+  <small>Our goal was to support building a database backed web app.</small>
+</section>
+<section>
+  <small>We needed the primitives for CRUD apps: http routes, fast read/write of structured data and background tasks.</small>
+</section>
+<section>
+  <small>We wanted iteration speed, zero downtime deploys, stateful http via stateless endpoints.</small>
+</section>
+<section>
+  Build one to throw away?
+</section>
+<section>
+  <h3>Mini talk: 17 Lessons Learned</h3>
+</section>
+<section>
+  <h3>Lesson 1: Coldstart can be defeated</h3>
+</section>
+<section>
+  <h3>Lesson 2: Small functions better on all dimensions</h3>
+</section>
+<section>
+  <h3>Lesson 3: NO functions is even better</h3>
+</section>
+<section>
+  <h3>Lesson 4: convention > configuration</h3>
+  <small>Config is liability just as much as code. Seek to eliminate it with conventions and smarter defaults.</small>
+</section>
+<section>
+  <h3>Lesson 5: Namespace units of deployment</h3>
+  <small>Infra is cattle; versions belong to revision control not deployment artifacts</small>
+</section>
+<section>
+  <h3>Lesson 6: Deps need to be in sync within a deployment namespace</h3>
+  <small>deps needed to be automated and synchronized across a namespace of deployment</small>
+</section>
+<section>
+  <h3>Lesson 7: There is Common Code</h3>
+  <small>There will be common code that needs to be shared within a deployment namespace</small>
+</section>
+<section>
+  <h3>Lesson 8: Runtime needs Context</h3>
+  <small>runtime needs to know about its app context (find resources: tables, buckets, broadcast events or to publish to queues</small>
+</section>
+<section>
+  <h3>Lesson 9: functions are cheap/disposable</h3>
+  <small>run lots; ideally in parallel</small>
+</section>
+<section>
+  <h3>Lesson 10: functions can be deployed in parallel</h3>
+  <small>Monolithic apps have lots of functions too… and no isolation. They cannot be deployed in parallel ever.</small>
+</section>
+<section>
+  <h3>Lesson 11: DynamoDB is Fucking Awesome</h3>
+  <small>Just use it ok.</small>
+</section>
+<section>
+  <h3>Lesson 12: S3 and Lambda are amazing together</h3>
+  <small>use it for static assets. use it for JSON data.</small>
+</section>
+<section>
+  <h3>Lesson 13a: evented everything</h3>
+  <small>take everything possible off the user path with either sns events or sqs queues</small>
+</section>
+<section>
+  <h3>Lesson 13b: SQS and SNS are subtly different</h3>
+  <small>Slightly different approaches and guarentees for delivery.</small>
+</section>
+<section>
+  <h3>Lesson 13c: Cloudwatch Scheduled Events</h3>
+  <small>Super powerful combined with feedback control systems.</small>
+</section>
+<section>
+  <h3>Lesson 13d: State Machines?</h3>
+  <small>queues/events/scheduled can be consolidated into a single primitive 'step function'</small>
+</section>
+<section>
+  Bonus!
+  <h3>Lesson 14: Lambda works REAL GOOD with S3</h3>
+  <small>Static assets</small>
+</section>
+<section>
+  <h3>Lesson 14b: Lambda works REAL GOOD with S3</h3>
+  <small>Flat file data base?
+    <li>S3 Select
+    <li>S3 Batch
+  </small>
+</section>
+<section>
+  <h3>Lesson 15: Regions are a leaky abstraction</h3>
+  <small>
+    <li>regionless will be a thing: stacksets?
+    <li>CDN is only part of the story
+  </small>
+</section>
+<section>
+  <h3>Lesson 16: Accounts are the best unit of isolation</h3>
+  <small>
+    <li>one per person
+    <li>bonus: one per person per app!
+  </small>
+</section>
+<section>
+  <h3>Lesson 17: Infra as Code</h3>
+  <small>
+    <li>Non optional! as in: required
+    <li>Reproducability and determinism
+    <li>Precursors: chef, puppet, anisible, salt, reems of fucking yaml/bash
+    <li>Rising stars: Terraform (2014), CFN (2011), SAM (Nov 2016)
+  </small>
+</section>
+
+<section>
+  <h2>
+  What did we do with what we learned...?
+  </h2>
+</section>
+<section>
+  We did the unthinkable.
+</section>
+<section>
+  <h3>Heresy #1</h3>
+  We created a manifest format <code>.arc</code> which stood for 'amazon run commands' because we wanted to be cool like .bashrc, .vimrc, etc
+</section>
+<section>
+  goals
+</section>
+<section>
+  Be terse and as syntax free as possible; solve for one of the biggest problems of XML
+</section>
+<section>
+  Have comments; solve for one of the biggest problems of JSON
+</section>
+<section>
+  Discourage nesting; solving for the biggest problem of YAML
+</section>
+<section>
+  Support for basic scalar values: <code>String</code>, <code>Number</code>, <code>Boolean</code>
+</section>
+<section>
+  Support for complex values: <code>Vector</code> and <code>Map</code>
+</section>
+<section>
+REALLY terse; we want to express the infrastructure with the minimum readable syntax
+</section>
+<section>
+REALLY terse; we want to remember how to express infra without reference docs
+</section>
+<section><img src=/arc.png></section>
+<section>
+  <h3>Hacker News</h3>
+  <h1>HATED IT</h1>
+  <small class=fragment>So we knew it was doing something good (and unique).</small>
+</section>
+<section>
+  <h2>HN gets a bad rap; you can judge for yourself</h2> 
+  <a href=https://news.ycombinator.com/item?id=17286075>Full thread here</a>
+</section>
+<section>
+  Heresy #2
+</section>
+<section>
+  <h2>Architect was not Cloudformation based</h2>
+  <small>Was not a realistic option for our requirements at that time.</small>
+</section>
+<section>
+  <h2>Aside: Don't Judge Tech Choices</h2>
+  <h3 class=fragment>Unless it is K8s</h3>
+  <small class=fragment>Haha, jk. Rails is cool.</small>
+</section>
+<section>
+  <small>Stable! Documented! Tested!</small>
+  <h1>Architect 5.x 🎉</h1>
+  <small>NOT Cloudformation based 😭; install <a href=https://arc.codes>arc.codes</a>.</small>
+</section>
+<section>
+  <small>SAM/CFN based <b style=color:hotpink>ALPHA</b>! <strike>Documented! Tested!</strike></small>
+  <h1>Architect 6.x 🎉</h1>
+  <code>npm install -g @architect/cli</code>
+</section>
+<section>
+  WARNING! Beta code. Demo gremlins. Etc!
+</section>
+
+<section>
+  <h3>Architect 6.x Highlights</h3>
+  <ol>
+    <li>Work locally!
+    <li>Staging and production are first class concepts
+    <li>Node, Python and Ruby fully supported
+    <li>Export as <code>sam.json</code>
+    <li>Deploy with Cloudformation
+    <li>🆕 Dirty deploy 
+    <li>Distribute with SAR
+  </ol>
+</section>
+<!-- 
+- while that deploy is running lets look at the delta between configuration formats
+- quantifiably 10x developer using Architect
+- closing thoughts
+  - building infra as code is absolutely the future
+      - self care (no servers to patch)
+      - wallet care (100% utilization is also good for the environment)
+      - faster iterations!
+      - incredibly enabling technology; focus on the business logic 
+      - but also cheap experiments and faster learning
+  - CDK is absolutely interesting af
+  - interop with the CFN ecosystem is badass: Macros, Nested Stacks, SAR
+  - s3 should not need dirty deploy tricks
+  - still need a CI system: try out begin.com if you want gitops on easy mode
+-->
+
+
+<section>
+  <h3>Get Involved in JSF Architect</h3>
+  <ul style=text-align:left>
+  <li class=fragment>💓 Pull requests are always nice
+  <li class=fragment>🐞 Bug reports are APPRECIATED
+  <li class=fragment>🦋 Feature requests are APPRECIATED
+  <li class=fragment>🎙 Share what you learn on Twitter or blogs
+  </ul>
+</section>
+
+<section>
+  <h3>thx eh!</h3>
+  <small><a href=https://twitter.com/brianleroux>@brianleroux</a></small>
+  <br>
+  <ul style=text-align:left>
+  <li>🌟 Star <a href=https://github.com/arc-repos/architect>github.com/architect/architect</a>
+  <li>✨ Follow the quickstart on <a href=https://arc.codes>arc.codes</a>
+  <li>🎉 Sign up for the <a href=https://begin.com>begin.com</a> beta for Lambda gitops style
+  </ul>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- END -->
+<script src=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/lib/js/head.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/js/reveal.js></script>
+<script>
+Reveal.initialize({
+  history: true,
+  dependencies: [{
+    src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/plugin/highlight/highlight.js',
+    async: true,
+    callback: function() { hljs.initHighlightingOnLoad() }
+  }]
+})
+</script>
+</div>
+</div>
+</body>
+</html>
